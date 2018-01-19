@@ -34,7 +34,7 @@ Commands:
 
 Use "ForeverCore [command] --help" for more information about a command.
 ```
-Only available command is **start**
+The only available command is **start**
 ```bash
 dotnet ForeverCore.dll "path to process to run"
 ```
