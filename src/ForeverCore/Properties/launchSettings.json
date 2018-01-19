@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ForeverCore": {
+      "commandName": "Project",
+      "commandLineArgs": "start \"c:\\temp\\test.cmd\" -r 2"
+    }
+  }
+}
