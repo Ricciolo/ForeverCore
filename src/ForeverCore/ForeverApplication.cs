@@ -25,8 +25,10 @@ namespace ForeverCore
             HelpOption(HelpOptionName);
 
             Console.WriteLine("###########################################");
-            Console.WriteLine("| Ricciolo - ForeverCore                  |");
-            Console.WriteLine("| https://github.com/ricciolo/forevercore |");
+            Console.WriteLine();
+            Console.WriteLine(" Ricciolo - ForeverCore");
+            Console.WriteLine(" https://github.com/ricciolo/forevercore ");
+            Console.WriteLine();
             Console.WriteLine("###########################################");
             Console.CancelKeyPress += Console_CancelKeyPress;
             
