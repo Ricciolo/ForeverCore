@@ -4,22 +4,19 @@ ForeverCore is a small utility written in **.NET Core** for running an external 
 It works on any platform supported by .NET Core: **Windows**, **Linux**, **macOS**.
 
 ## Setup
-Here the steps to setup the utility using bash. 
-1. Install the .NET Core SDK versione 2 or above, following the instructions you can [find here](https://www.microsoft.com/net/download/windows). 
-2. Clone this repository
+Here the steps to setup the utility using bash on Linux. On Windows is pretty similar.
+1. Download the release for your OS. You can find the release [here](https://github.com/Ricciolo/ForeverCore/releases/). The app is self contained and you don't need any other dependency
    ```bash
-   mkdir ForeverCore
-   git clone https://github.com/Ricciolo/ForeverCore.git
+   wget https://github.com/Ricciolo/ForeverCore/releases/download/v1.0-alpha/ForeverCore-v1.0-linux-arm.zip
    ```
-3. Compile the code
+2. Unzip the content into a folder
    ```bash
-   cd ForeverCore/src
-   dotnet publish -c release -o output
+   unzip ForeverCore-v1.0-linux-arm.zip -d ForeverCore
    ```
-4. Run the utility
+3. Run the utility
    ```bash
-   cd output
-   dotnet ForeverCore.dll
+   chmod +x ForeverCore
+   ./ForeverCore
    ```
 ## Usage
 The utility use .NET Core CLI usage style.
