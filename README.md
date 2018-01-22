@@ -34,9 +34,9 @@ Commands:
 
 Use "ForeverCore [command] --help" for more information about a command.
 ```
-Only available command is **start**
+The only available command is **start**
 ```bash
-dotnet ForeverCore.dll "path to process to run"
+dotnet ForeverCore.dll start "path to process to run"
 ```
 Options are:
 * **-r**: number of retries. If the process crash, the utility restarts it automatically. Default value is infinite (zero)
