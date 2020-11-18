@@ -1,101 +1,95 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
 
 namespace ForeverCore
 {
-    public class ForeverApplication : CommandLineApplication
-    {
-        private const string HelpOptionName = "-?|-h|--help";
+	public class ForeverApplication : CommandLineApplication
+	{
+		private const string HelpOptionName = "-?|-h|--help";
 
-        private IWebHost _webHost;
-        private ProcessManager _manager;
+		private IWebHost _webHost;
+		private ProcessManager _manager;
 
-        public ForeverApplication()
-        {
-            Name = "ForeverCore";
-            HelpOption(HelpOptionName);
+		public ForeverApplication()
+		{
+			Name = "ForeverCore";
+			HelpOption(HelpOptionName);
 
-            Console.WriteLine("###########################################");
-            Console.WriteLine();
-            Console.WriteLine(" Ricciolo - ForeverCore");
-            Console.WriteLine(" https://github.com/ricciolo/forevercore ");
-            Console.WriteLine();
-            Console.WriteLine("###########################################");
-            Console.CancelKeyPress += Console_CancelKeyPress;
-            
-            Command("start", c =>
-            {
-                c.HelpOption(HelpOptionName);
-                c.Description = "Run and monitor the process specified";
+			Console.WriteLine("###########################################");
+			Console.WriteLine();
+			Console.WriteLine(" Ricciolo - ForeverCore");
+			Console.WriteLine(" https://github.com/ricciolo/forevercore ");
+			Console.WriteLine();
+			Console.WriteLine("###########################################");
+			Console.CancelKeyPress += Console_CancelKeyPress;
 
-                CommandArgument nameArgument = c.Argument("path", "Path to the process to execute");
-                CommandOption portOption = c.Option("-p |--port <port>", "The port where listen for external commands. Default is 6321", CommandOptionType.SingleValue);
-                CommandOption retriesOption = c.Option("-r |--retries <n>", "How many restart the process. Default is forever", CommandOptionType.SingleValue);
+			Command("start", c =>
+			{
+				c.HelpOption(HelpOptionName);
+				c.Description = "Run and monitor the process specified";
 
-                c.OnExecute(() => Start(nameArgument, portOption, retriesOption));
-            });
-            OnExecute(() =>
-            {
-                ShowHelp();
-                return 0;
-            });
-        }
+				var nameArgument = c.Argument("path", "Path to the process to execute");
+				var portOption = c.Option("-p |--port <port>", "The port where listen for external commands. Default is 6321", CommandOptionType.SingleValue);
+				var retriesOption = c.Option("-r |--retries <n>", "How many time to restart the process. Default is forever", CommandOptionType.SingleValue);
 
-        private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
-        {
-            e.Cancel = true;
+				c.OnExecute(() => Start(nameArgument, portOption, retriesOption));
+			});
+			OnExecute(() =>
+			{
+				ShowHelp();
+				return 0;
+			});
+		}
 
-            _manager.Exit();
-        }
+		private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+		{
+			e.Cancel = true;
 
-        private int Start(CommandArgument nameArgument, CommandOption portOption, CommandOption retriesOption)
-        {
-            if (String.IsNullOrWhiteSpace(nameArgument.Value))
-            {
-                Console.WriteLine("Please specify the path");
-                return 1;
-            }
+			_manager.Exit();
+		}
 
-            // Parse options
-            int port = portOption.HasValue() ? Convert.ToInt32(portOption.Value()) : 6321;
-            int retries = retriesOption.HasValue() ? Convert.ToInt32(retriesOption.Value()) : 0;
+		private int Start(CommandArgument nameArgument, CommandOption portOption, CommandOption retriesOption)
+		{
+			if (string.IsNullOrWhiteSpace(nameArgument.Value))
+			{
+				Console.WriteLine("Please specify the path");
+				return 1;
+			}
 
-            // Prepare proces manager
-            string[] data = nameArgument.Value.Split(new[] { ' ' }, 2);
-            _manager = new ProcessManager(data[0], data.ElementAtOrDefault(1), retries);
+			// Parse options
+			var port = portOption.HasValue() ? Convert.ToInt32(portOption.Value()) : 6321;
+			var retries = retriesOption.HasValue() ? Convert.ToInt32(retriesOption.Value()) : 0;
 
-            // Start web server for listening commands
-            StartWebServerAsync(port);
-            _manager.Print($"Listening commands on http://+:{port}", false);
+			// Prepare proces manager
+			var data = nameArgument.Value.Split(new[] { ' ' }, 2);
+			_manager = new ProcessManager(data[0], data.ElementAtOrDefault(1), retries);
 
-            // Wait the process exit
-            int r = _manager.StartProcessAsync().GetAwaiter().GetResult();
+			// Start web server for listening commands
+			StartWebServerAsync(port);
+			_manager.Print($"Listening commands on http://+:{port}", false);
 
-            // Stop web server
-            _webHost.StopAsync();
+			// Wait for the process to exit
+			var r = _manager.StartProcessAsync().GetAwaiter().GetResult();
 
-            return r;
-        }
+			// Stop web server
+			_webHost.StopAsync();
 
-        private void StartWebServerAsync(int port)
-        {
-            _webHost = new WebHostBuilder()
-                .UseKestrel()
-                .UseStartup<Startup>()
-                .UseUrls($"http://+:{port}")
-                .ConfigureServices(s => s.AddSingleton(_manager))
-                .Build();
-            _webHost.StartAsync().GetAwaiter();
-        }       
-     
-    }
+			return r;
+		}
+
+		private void StartWebServerAsync(int port)
+		{
+			_webHost = new WebHostBuilder()
+				.UseKestrel()
+				.UseStartup<Startup>()
+				.UseUrls($"http://+:{port}")
+				.ConfigureServices(s => s.AddSingleton(_manager))
+				.Build();
+			_webHost.StartAsync().GetAwaiter();
+		}
+
+	}
 }
