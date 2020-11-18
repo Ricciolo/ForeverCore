@@ -1,7 +1,7 @@
 # ForeverCore
-ForeverCore is a small utility written in **.NET Core** for running an external process forever, allowing you to control the lifecycle **via HTTP**.
+ForeverCore is a small utility written in **.NET 5** to run an external process forever, allowing you to control the lifecycle **via HTTP**.
 
-It works on any platform supported by .NET Core: **Windows**, **Linux**, **macOS**.
+It works on any platform supported by .NET 5: **Windows**, **Linux**, **macOS**.
 
 ## Setup
 Here the steps to setup the utility using bash on Linux. On Windows is pretty similar.
